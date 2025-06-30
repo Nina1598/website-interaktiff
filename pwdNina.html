@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toko Fashion Lengkap</title>
+<style>
+  body {margin:0; font-family:'Segoe UI', sans-serif; background:#f5fafd; color:#333;}
+  header {background:#3498db; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;}
+  .cart-btn img {width:28px;}
+  .cart-count {position:absolute; top:0; right:0; background:red; color:white; border-radius:50%; font-size:12px; padding:2px 6px;}
+  .toggle-btn, .filter-btn {margin-left:5px; padding:5px 10px; background:#fff; border:none; border-radius:5px; cursor:pointer;}
+  .produk {display:flex; flex-wrap:wrap; justify-content:center; gap:15px; padding:20px;}
+  .card {background:white; border-radius:10px; width:200px; box-shadow:0 3px 8px rgba(0,0,0,0.1);}
+  .card img {width:100%; height:140px; object-fit:cover; border-radius:10px 10px 0 0;}
+  .card h3 {margin:6px; font-size:15px;}
+  .card p {margin:0 6px; color:#3498db; font-weight:bold;}
+  .card button {margin:6px; width:calc(100% - 12px); padding:6px; background:#3498db; color:white; border:none; border-radius:6px; cursor:pointer;}
+  .card button:hover {background:#2980b9;}
+  .popup, .modal {display:none; position:fixed; z-index:10;}
+  .popup {top:60px; right:20px; background:white; border:1px solid #ccc; border-radius:10px; width:300px; box-shadow:0 5px 15px rgba(0,0,0,0.3); padding:15px;}
+  .popup ul {list-style:none; padding:0; max-height:200px; overflow-y:auto;}
+  .popup ul li {display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #eee;}
+  .modal {top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;}
+  .modal-content {background:white; padding:20px; border-radius:10px; width:320px;}
+  .modal-content input, .modal-content textarea, .modal-content select {width:100%; margin-bottom:8px; padding:6px; border:1px solid #ccc; border-radius:5px;}
+  /* Dark mode */
+  body.dark {background:#1e272e; color:#f1f2f6;}
+  body.dark .card, body.dark .popup, body.dark .modal-content {background:#2f3640;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Toko Fashion Lengkap 👗👔</h1>
+  <div>
+    <button class="filter-btn" onclick="filterProduk('All')">Semua</button>
+    <button class="filter-btn" onclick="filterProduk('Atasan')">Atasan</button>
+    <button class="filter-btn" onclick="filterProduk('Bawahan')">Bawahan</button>
+    <button class="filter-btn" onclick="filterProduk('Dress')">Dress</button>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙</button>
+    <button class="cart-btn" onclick="toggleCart()">
+      <img src="https://cdn-icons-png.flaticon.com/512/263/263142.png">
+      <span class="cart-count" id="cart-count">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="produk" id="produk-list">
+  <div class="card atasan">
+    <img src="kaos.jpeg" alt="Kaos Polos">
+    <h3>Kaos Polos</h3>
+    <p>Rp 75.000</p>
+    <button onclick="tambahKeranjang('Kaos Polos',75000)">Tambah</button>
+  </div>
+  <div class="card atasan">
+    <img src="kemeja pria.jpeg" alt="Kemeja Pria">
+    <h3>Kemeja Pria</h3>
+    <p>Rp 120.000</p>
+    <button onclick="tambahKeranjang('Kemeja Pria',120000)">Tambah</button>
+  </div>
+  <div class="card atasan">
+    <img src="blouse.jpeg" alt="Blouse Cantik">
+    <h3>Blouse Cantik</h3>
+    <p>Rp 110.000</p>
+    <button onclick="tambahKeranjang('Blouse Cantik',110000)">Tambah</button>
+  </div>
+  <div class="card bawahan">
+    <img src="celana jeans.jpeg" alt="Celana Jeans">
+    <h3>Celana Jeans</h3>
+    <p>Rp 130.000</p>
+ <button onclick="tambahKeranjang('Celana Jeans',130000)">Tambah</button>
+  </div>
+  <div class="card bawahan">
+    <img src="celana pendek.jpg" alt="Celana Pendek">
+    <h3>Celana Pendek</h3>
+    <p>Rp 90.000</p>
+    <button onclick="tambahKeranjang('Celana Pendek',90000)">Tambah</button>
+  </div>
+  <div class="card Bawahan">
+    <img src="rok.jpg" alt="Rok">
+    <h3>Rok</h3>
+    <p>Rp 100.000</p>
+    <button onclick="tambahKeranjang('Celana Pendek',90000)">Tambah</button>
+  </div>
+ 
+  <div class="card dress">
+    <img src="dres.jpg" alt="Dress Wanita">
+    <h3>Dress Wanita</h3>
+    <p>Rp 150.000</p>
+    <button onclick="tambahKeranjang('Dress Wanita',150000)">Tambah</button>
+  </div>
+ <div class="card dress">
+    <img src="abaya.jpg" alt="abaya">
+    <h3>Dress Wanita</h3>
+<p>Rp 90.000</p>
+    <button onclick="tambahKeranjang('abaya',90000)">Tambah</button>
+  </div>
+
+
+<div class="popup" id="popup-cart">
+  <h3>Keranjang 🛒</h3>
+  <ul id="list-keranjang"></ul>
+  <h4 id="total">Total: Rp 0</h4>
+  <button onclick="openCheckout()">Checkout</button>
+</div>
+
+<div class="modal" id="modal-checkout">
+  <div class="modal-content">
+    <h3>Checkout</h3>
+    <form onsubmit="prosesCheckout(event)">
+      <input type="text" id="nama" placeholder="Nama" required>
+      <textarea id="alamat" placeholder="Alamat" required></textarea>
+      <input type="text" id="nohp" placeholder="No HP" required>
+      <select id="pembayaran" required>
+        <option value="">-- Metode Pembayaran --</option>
+        <option>Transfer Bank</option>
+        <option>E-Wallet</option>
+        <option>COD</option>
+      </select>
+      <div id="summary"></div>
+      <button type="submit">Bayar</button>
+      <button type="button" onclick="closeCheckout()">Batal</button>
+    </form>
+  </div>
+</div>
+
+<script>
+let keranjang = [];
+const cartCount = document.getElementById('cart-count');
+const listKeranjang = document.getElementById('list-keranjang');
+const totalHarga = document.getElementById('total');
+const popupCart = document.getElementById('popup-cart');
+const modalCheckout = document.getElementById('modal-checkout');
+
+function tambahKeranjang(nama, harga) {
+  let ada = keranjang.find(i => i.nama === nama);
+  if (ada) {
+    ada.qty += 1;
+  } else {
+    keranjang.push({
+      nama,
+      harga,
+      qty: 1
+    });
+  }
+  renderKeranjang();
+}
+
+function renderKeranjang() {
+  listKeranjang.innerHTML = '';
+  let total = 0;
+
+  keranjang.forEach((item, i) => {
+    total += item.harga * item.qty;
+    listKeranjang.innerHTML += `
+      <li>${item.nama} x${item.qty}
+        <div>
+          <button onclick="ubahQty(${i},1)">＋</button>
+          <button onclick="ubahQty(${i},-1)">－</button>
+          <button onclick="hapusItem(${i})">🗑</button>
+        </div>
+      </li>`;
+  });
+
+  // Menggunakan backtick untuk template literal
+  totalHarga.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+  cartCount.textContent = keranjang.reduce((a, b) => a + b.qty, 0);
+}
+
+function ubahQty(i, d) {
+  keranjang[i].qty += d;
+  if (keranjang[i].qty <= 0) keranjang.splice(i, 1);
+  renderKeranjang();
+}
+
+function hapusItem(i) {
+  keranjang.splice(i, 1);
+  renderKeranjang();
+}
+
+function toggleCart() {
+  popupCart.style.display = popupCart.style.display === 'block' ? 'none' : 'block';
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+}
+
+function filterProduk(kat) {
+  document.querySelectorAll('.card').forEach(card => {
+    card.style.display = kat === 'All' || card.classList.contains(kat.toLowerCase()) ? 'block' : 'none';
+  });
+}
+
+function openCheckout() {
+  popupCart.style.display = 'none';
+  modalCheckout.style.display = 'flex';
+  // Menggunakan backtick untuk template literal
+  const sum = keranjang.map(i => `${i.nama} x${i.qty}`).join('<br>');
+  const total = keranjang.reduce((t, i) => t + i.harga * i.qty, 0).toLocaleString('id-ID');
+  document.getElementById('summary').innerHTML = `<b>Pesanan:</b><br>${sum}<br><b>Total:</b> Rp ${total}`;
+}
+
+function closeCheckout() {
+  modalCheckout.style.display = 'none';
+}
+
+function prosesCheckout(e) {
+  e.preventDefault();
+  if (keranjang.length === 0) {
+    alert('Keranjang kosong');
+    return;
+  }
+  alert('Pembayaran Berhasil!');
+  keranjang = [];
+  renderKeranjang();
+  closeCheckout();
+  e.target.reset();
+}
+
+</script>
+
+</body>
+</html>
